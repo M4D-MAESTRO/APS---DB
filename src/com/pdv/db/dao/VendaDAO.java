@@ -5,12 +5,17 @@ import com.pdv.exception.*;
 import com.pdv.model.*;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
+/*Logger.getLogger(VendaDAO.class.getName()).log(Level.SEVERE, null, ex);*/
+
+/**
+ *
+ * @author Luís Henrique de C. Corrêa
+ */
 public class VendaDAO implements DAO<Venda> {
     
     private Connection con;
@@ -148,21 +153,22 @@ public class VendaDAO implements DAO<Venda> {
         return aux;
     }
     
-    private void deletarVenda(Long codCli, Long codProd, Long codLocal, LocalDate data) throws SQLException {
+    public void deletarVenda(Integer codCli, Integer codProd, Integer codLocal, LocalDate data) throws SQLException {
         try {
             con = Factory.getConnection();
             con.setAutoCommit(false);
-
+            
             /*Deletar venda*/
             String query = "SELECT valor_total, qte_venda, codlocal FROM venda WHERE codcli = ? AND codlocal = ? AND data_venda = ?";
             PreparedStatement ps = con.prepareStatement(query);
-            ps.setLong(1, codCli);
-            ps.setLong(2, codLocal);
+            ps.setInt(1, codCli);
+            ps.setInt(2, codLocal);
             ps.setDate(3, Date.valueOf(data));
             ResultSet rs = ps.executeQuery();
             rs.beforeFirst();
             if (!rs.next()) {
-                //venda inexistente
+                con.rollback();
+                throw new SQLException("Venda inexistente!");
             }
             rs.first();
             Long vqtde = rs.getLong("qte_venda");
@@ -170,20 +176,21 @@ public class VendaDAO implements DAO<Venda> {
             Double vtot = rs.getDouble("valor_total");
 
             /*Tratar estoque*/
-            query = "Update produto SET qte_estoque = qte_estoque + ? Where codProd = ?";
+            query = "Update produto SET qte_estoque = qte_estoque + ? Where codprod = ?";
             ps = con.prepareStatement(query);
             ps.setLong(1, vqtde);
-            ps.setLong(2, codProd);
+            ps.setInt(2, codProd);
             Integer status = ps.executeUpdate();
             if (status != 1) {
                 //erro
             }
 
             /*Devolver bonus*/
-            query = "SELECT preco_unitario, codlocal FROM produto WHERE codpro = ?";
+            query = "SELECT preco_unitario, codlocal FROM produto WHERE codprod = ?";
             ps = con.prepareStatement(query);
-            ps.setLong(1, codProd);
+            ps.setInt(1, codProd);
             rs = ps.executeQuery();
+            rs.first();
             Double valorTotalReal = rs.getDouble("preco_unitario") * vqtde;
             Long vLocalProd = rs.getLong("codlocal");
             Double vlrDesLocal = 0.0;
@@ -192,31 +199,31 @@ public class VendaDAO implements DAO<Venda> {
             }
             vtot += vlrDesLocal;
             
-            query = "UPDATE cliente SET bonus +=+ 100  Where codcli = ? AND ? < ?";
+            query = "UPDATE cliente SET bonus = bonus + 100  Where codcli = ? AND ? < ?";
             ps = con.prepareStatement(query);
-            ps.setLong(1, codCli);
+            ps.setInt(1, codCli);
             ps.setDouble(2, vtot);
             ps.setDouble(3, valorTotalReal);
-            ps.executeQuery();
+            ps.executeUpdate();
 
             /*Deletar venda*/
             query = "DELETE FROM venda WHERE codcli = ? AND data_venda = ?";
             ps = con.prepareStatement(query);
-            ps.setLong(1, codCli);
+            ps.setInt(1, codCli);
             ps.setDate(2, Date.valueOf(data));
-            rs = ps.executeQuery();
+            Integer result = ps.executeUpdate();
             
-            rs.beforeFirst();
-            if (!rs.next()) {
-                //venda nao excluida
+            if (result == 0) {
+                con.rollback();
+                throw new SQLException("Venda não excluída!");
             }
             con.commit();
             JOptionPane.showMessageDialog(null, "Venda Excluída com sucesso!");
         } catch (SQLException ex) {
-            Logger.getLogger(VendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex.toString());
             con.rollback();
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(VendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex.toString());
             con.rollback();
         }
         
@@ -233,7 +240,7 @@ public class VendaDAO implements DAO<Venda> {
             //Detalhamento d = dao.incluirVenda(5, 2, 7, 1L);
             
             /*deletarVenda(Long codCli, Long codProd, Long codLocal, LocalDate data)*/
-            dao.deletarVenda(1L, 1L, 2L, LocalDate.parse("2019-10-14"));// Com erro
+            dao.deletarVenda(2, 12, 1, LocalDate.parse("2019-10-17"));// Com erro
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.toString());
         }

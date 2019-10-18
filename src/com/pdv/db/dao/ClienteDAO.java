@@ -8,7 +8,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-
+/**
+ *
+ * @author Luís Henrique de C. Corrêa
+ */
 public class ClienteDAO implements DAO<Cliente> {
 
     private Connection con;

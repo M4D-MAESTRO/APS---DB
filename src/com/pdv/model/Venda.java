@@ -3,9 +3,12 @@ package com.pdv.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.Objects;
 
+import java.util.Objects;
+/**
+ *
+ * @author Luís Henrique de C. Corrêa
+ */
 public class Venda implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -1,7 +1,10 @@
 package com.pdv.db;
 
 import java.sql.*;
-
+/**
+ *
+ * @author Luís Henrique de C. Corrêa
+ */
 public class Factory {
 
     private static Connection connection = null;

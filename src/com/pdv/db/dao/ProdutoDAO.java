@@ -1,7 +1,6 @@
 package com.pdv.db.dao;
 
 import com.pdv.db.Factory;
-import com.pdv.model.Cliente;
 import com.pdv.model.Localidade;
 import com.pdv.model.Produto;
 import java.sql.Connection;
@@ -13,7 +12,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-
+/**
+ *
+ * @author Luís Henrique de C. Corrêa
+ */
 public class ProdutoDAO implements DAO<Produto> {
 
     private Connection con;

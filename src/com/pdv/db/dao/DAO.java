@@ -2,7 +2,10 @@
 package com.pdv.db.dao;
 
 import java.util.List;
-
+/**
+ *
+ * @author Luís Henrique de C. Corrêa
+ */
 public interface DAO<T>{
     
     /*public abstract void insert(T obj) throws Throwable;

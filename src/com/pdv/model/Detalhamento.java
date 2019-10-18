@@ -1,7 +1,10 @@
 package com.pdv.model;
 
 import java.io.Serializable;
-
+/**
+ *
+ * @author Luís Henrique de C. Corrêa
+ */
 public class Detalhamento implements Serializable {
 
     private static final long serialVersionUID = 1L;
