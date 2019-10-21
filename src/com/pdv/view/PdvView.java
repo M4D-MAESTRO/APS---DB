@@ -6,6 +6,7 @@ import com.pdv.db.dao.LocalDAO;
 import com.pdv.db.dao.ProdutoDAO;
 import com.pdv.db.dao.VendaDAO;
 import com.pdv.model.Cliente;
+import com.pdv.model.Detalhamento;
 import com.pdv.model.Localidade;
 import com.pdv.model.Produto;
 import com.pdv.utils.Formatador;
@@ -29,6 +30,7 @@ public class PdvView extends javax.swing.JFrame {
     private Localidade localSelecionado;
     private Produto produtoSelecionado;
     private Produto aSerExcluido;
+    private Detalhamento detalhamento;
 
     public PdvView() {
         initComponents();
@@ -111,8 +113,7 @@ public class PdvView extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PDV - Ponto de Venda");
-        setMinimumSize(new java.awt.Dimension(800, 600));
-        setPreferredSize(new java.awt.Dimension(800, 600));
+        setMinimumSize(new java.awt.Dimension(602, 667));
         setResizable(false);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -183,7 +184,15 @@ public class PdvView extends javax.swing.JFrame {
             new String [] {
                 "ID", "Produto", "Quantidade", "Preço unitário", "Valor total"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jTableTabela.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 jTableTabelaMouseReleased(evt);
@@ -196,6 +205,7 @@ public class PdvView extends javax.swing.JFrame {
         jLabel7.setText("Total de compra:");
 
         jTextFieldTotalCompra.setEditable(false);
+        jTextFieldTotalCompra.setText("0");
 
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/pdv/resources/imgs/aperto.png"))); // NOI18N
         jButton3.setText("Fechar");
@@ -328,7 +338,7 @@ public class PdvView extends javax.swing.JFrame {
         try {
             Long quantidade = Long.parseLong(jTextFieldQuantidade.getText());
             if (quantidade <= 0) {
-                JOptionPane.showMessageDialog(null, "Quantidade igual 0");
+                JOptionPane.showMessageDialog(null, "Quantidade insira uma quantidade igual ou mairo que 1 (um)");
             } else {
                 dao = new ClienteDAO();
                 clienteSelecionado = (Cliente) dao.getById(getCod(jComboBoxCliente.getSelectedItem().toString()));
@@ -337,10 +347,12 @@ public class PdvView extends javax.swing.JFrame {
                 localSelecionado = (Localidade) dao.getById(getCod(jComboBoxLocal.getSelectedItem().toString()));
 
                 VendaDAO vendaDAO = new VendaDAO();
-
-                vendaDAO.incluirVenda(clienteSelecionado.getCodCli(), localSelecionado.getCodLocal(),
+                
+                detalhamento = vendaDAO.incluirVenda(clienteSelecionado.getCodCli(), localSelecionado.getCodLocal(),
                         produtoSelecionado.getCodProd(), quantidade);
-                atualizarLista();
+                atualizarLista(false);
+                atualizarTotal(detalhamento.getValorTotal(), false);
+
                 limparCampos();
             }
 
@@ -353,11 +365,6 @@ public class PdvView extends javax.swing.JFrame {
 
     private void jButtonExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExcluirActionPerformed
         try {
-            Long quantidade = Long.parseLong(jTextFieldQuantidade.getText());
-            if (quantidade <= 0) {
-
-            }
-
             dao = new ClienteDAO();
             clienteSelecionado = (Cliente) dao.getById(getCod(jComboBoxCliente.getSelectedItem().toString()));
 
@@ -368,8 +375,10 @@ public class PdvView extends javax.swing.JFrame {
 
             vendaDAO.deletarVenda(clienteSelecionado.getCodCli(), aSerExcluido.getCodProd(),
                     localSelecionado.getCodLocal(), LocalDate.now());
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Preencha com números inteiros POSITIVOS o campo:\n QUANTIDADE");
+            Double valor = atualizarLista(true);
+            atualizarTotal(valor, true);
+
+            limparCampos();
         } catch (Throwable ex) {
             Logger.getLogger(PdvView.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -390,17 +399,38 @@ public class PdvView extends javax.swing.JFrame {
         produtoSelecionado = null;
         jTextFieldDesc.setText("");
         jTextFieldQuantidade.setText("");
+        jComboBoxProduto.setSelectedIndex(0);
+        aSerExcluido = null;
+        detalhamento = null;
     }
 
-    private void atualizarLista() {
+    private Double atualizarLista(boolean isRemocao) {
         DefaultTableModel model = (DefaultTableModel) jTableTabela.getModel();
-        model.addRow(new Object[]{
-            produtoSelecionado.getCodProd(),
-            produtoSelecionado.getDescricao(),
-            jTextFieldQuantidade.getText(),
-            produtoSelecionado.getPrecoUnitario(),
-            (Integer.parseInt(jTextFieldQuantidade.getText()) * produtoSelecionado.getPrecoUnitario())
-        });
+        if (isRemocao) {
+            Double valor = (Double) jTableTabela.getValueAt(jTableTabela.getSelectedRow(), 4);
+            model.removeRow(jTableTabela.getSelectedRow());
+            return valor;
+        } else {
+            model.addRow(new Object[]{
+                produtoSelecionado.getCodProd(),
+                detalhamento.getDescricao(),
+                detalhamento.getQteVenda(),
+                detalhamento.getPrecoUnitario(),
+                detalhamento.getValorTotal()
+            });
+            return 0.0;
+        }
+
+    }
+
+    private void atualizarTotal(Double valor, Boolean isRemocao) {
+        if (isRemocao) {
+            valor = Double.parseDouble(jTextFieldTotalCompra.getText()) - valor;
+            jTextFieldTotalCompra.setText(valor.toString());
+        } else {
+            valor += Double.parseDouble(jTextFieldTotalCompra.getText());
+            jTextFieldTotalCompra.setText(valor.toString());
+        }
     }
 
     private Integer getCod(String txt) {

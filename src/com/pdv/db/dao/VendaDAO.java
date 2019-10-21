@@ -86,9 +86,10 @@ public class VendaDAO implements DAO<Venda> {
                     + "From Venda v\n"
                     + "JOIN Produto p ON p.Codprod = v.Codprod\n"
                     + "JOIN cliente c ON c.CodCli = v.codcli\n"
-                    + "WHERE c.codCli = ?;";
+                    + "WHERE c.codCli = ? AND p.codprod = ?;";
             ps = con.prepareStatement(query);
             ps.setInt(1, codCli);
+            ps.setInt(2, codProd);
             ResultSet rs = ps.executeQuery();
             con.commit();
             rs.first();
@@ -159,7 +160,7 @@ public class VendaDAO implements DAO<Venda> {
             con.setAutoCommit(false);
             
             /*Deletar venda*/
-            String query = "SELECT valor_total, qte_venda, codlocal FROM venda WHERE codcli = ? AND codlocal = ? AND data_venda = ?";
+            String query = "SELECT valor_total, qte_venda, codlocal FROM venda WHERE codcli = ? AND codlocal = ?  AND data_venda = ?";
             PreparedStatement ps = con.prepareStatement(query);
             ps.setInt(1, codCli);
             ps.setInt(2, codLocal);
@@ -207,10 +208,11 @@ public class VendaDAO implements DAO<Venda> {
             ps.executeUpdate();
 
             /*Deletar venda*/
-            query = "DELETE FROM venda WHERE codcli = ? AND data_venda = ?";
+            query = "DELETE FROM venda WHERE codcli = ? AND data_venda = ? AND codprod = ?";
             ps = con.prepareStatement(query);
             ps.setInt(1, codCli);
             ps.setDate(2, Date.valueOf(data));
+            ps.setInt(3, codProd);
             Integer result = ps.executeUpdate();
             
             if (result == 0) {
