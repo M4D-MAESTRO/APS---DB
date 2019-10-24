@@ -30,6 +30,7 @@ public class PdvView extends javax.swing.JFrame {
         atualizarCliente();
         atualizarLocal();
         atualizarprodutos();
+        setTable();
     }
 
     private void atualizarCliente() {
@@ -80,6 +81,14 @@ public class PdvView extends javax.swing.JFrame {
         jComboBoxProduto.setModel(new DefaultComboBoxModel<>(codigos));
     }
 
+    private void setTable(){
+        jTableTabela.getColumnModel().getColumn(0).setMaxWidth(50);
+        jTableTabela.getColumnModel().getColumn(1).setMinWidth(200);
+        jTableTabela.getColumnModel().getColumn(2).setMaxWidth(80);
+        jTableTabela.getColumnModel().getColumn(3).setMaxWidth(100);
+        jTableTabela.getColumnModel().getColumn(4).setMaxWidth(100);
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
