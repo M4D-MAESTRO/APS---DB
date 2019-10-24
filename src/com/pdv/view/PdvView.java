@@ -1,7 +1,6 @@
 package com.pdv.view;
 
 import com.pdv.db.dao.*;
-import com.pdv.exception.OutOFStockException;
 import com.pdv.model.*;
 import com.pdv.utils.Formatador;
 import java.time.LocalDate;
@@ -31,9 +30,6 @@ public class PdvView extends javax.swing.JFrame {
         atualizarCliente();
         atualizarLocal();
         atualizarprodutos();
-        jComboBoxCliente.setSelectedIndex(1);
-        jComboBoxLocal.setSelectedIndex(1);
-        jComboBoxProduto.setSelectedIndex(15);
     }
 
     private void atualizarCliente() {
@@ -106,7 +102,7 @@ public class PdvView extends javax.swing.JFrame {
         jTableTabela = new javax.swing.JTable();
         jLabel7 = new javax.swing.JLabel();
         jTextFieldTotalCompra = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
+        jButtonFechar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PDV - Ponto de Venda");
@@ -125,18 +121,30 @@ public class PdvView extends javax.swing.JFrame {
         jLabel2.setText("Cliente Selecionado:");
 
         jComboBoxCliente.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxClienteActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(0, 0, 153));
         jLabel3.setText("Local de Venda:");
 
         jComboBoxLocal.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxLocal.setEnabled(false);
+        jComboBoxLocal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxLocalActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(0, 0, 153));
         jLabel4.setText("Código do Produto:");
 
         jComboBoxProduto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxProduto.setEnabled(false);
         jComboBoxProduto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxProdutoActionPerformed(evt);
@@ -147,6 +155,7 @@ public class PdvView extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(0, 0, 153));
         jLabel5.setText("Quantidade:");
 
+        jTextFieldQuantidade.setEditable(false);
         jTextFieldQuantidade.setText("0");
         jTextFieldQuantidade.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -156,6 +165,8 @@ public class PdvView extends javax.swing.JFrame {
 
         jButtonVender.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/pdv/resources/imgs/ok.png"))); // NOI18N
         jButtonVender.setText("Vender");
+        jButtonVender.setToolTipText("Preencha os dados antes de prosseguir!");
+        jButtonVender.setEnabled(false);
         jButtonVender.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonVenderActionPerformed(evt);
@@ -164,6 +175,8 @@ public class PdvView extends javax.swing.JFrame {
 
         jButtonExcluir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/pdv/resources/imgs/close.png"))); // NOI18N
         jButtonExcluir.setText("Excluir");
+        jButtonExcluir.setToolTipText("Selecione um item da tabela antes de excluir");
+        jButtonExcluir.setEnabled(false);
         jButtonExcluir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonExcluirActionPerformed(evt);
@@ -204,8 +217,13 @@ public class PdvView extends javax.swing.JFrame {
         jTextFieldTotalCompra.setEditable(false);
         jTextFieldTotalCompra.setText("0");
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/pdv/resources/imgs/aperto.png"))); // NOI18N
-        jButton3.setText("Fechar");
+        jButtonFechar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/pdv/resources/imgs/aperto.png"))); // NOI18N
+        jButtonFechar.setText("Fechar");
+        jButtonFechar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonFecharActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -249,7 +267,7 @@ public class PdvView extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(217, 217, 217)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButtonFechar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -289,7 +307,7 @@ public class PdvView extends javax.swing.JFrame {
                     .addComponent(jLabel7)
                     .addComponent(jTextFieldTotalCompra, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                .addComponent(jButton3)
+                .addComponent(jButtonFechar)
                 .addContainerGap())
         );
 
@@ -318,6 +336,19 @@ public class PdvView extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldQuantidadeKeyTyped
 
     private void jComboBoxProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxProdutoActionPerformed
+        Integer index = jComboBoxProduto.getSelectedIndex();
+
+        if (index > 0) {
+            jTextFieldQuantidade.setEditable(true);
+            jButtonVender.setEnabled(true);
+            jButtonVender.setToolTipText("");
+        } else {
+            jTextFieldQuantidade.setText("0");
+            jTextFieldQuantidade.setEditable(false);
+            jButtonVender.setEnabled(false);
+            jButtonVender.setToolTipText("Preencha os dados antes de prosseguir!");
+        }
+
         dao = new ProdutoDAO();
         try {
             Integer codigo = Integer.parseInt(jComboBoxProduto.getSelectedItem().toString());
@@ -356,7 +387,6 @@ public class PdvView extends javax.swing.JFrame {
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(null, "Preencha com números inteiros POSITIVOS o campo:\n QUANTIDADE");
         } catch (Throwable ex) {
-            System.out.println(ex);
             JOptionPane.showMessageDialog(null, ex.getMessage() + "\n" + ex.getCause().getMessage());
         }
     }//GEN-LAST:event_jButtonVenderActionPerformed
@@ -375,8 +405,11 @@ public class PdvView extends javax.swing.JFrame {
                     localSelecionado.getCodLocal(), LocalDate.now());
             Double valor = atualizarLista(true);
             atualizarTotal(valor, true);
-
+            jButtonExcluir.setEnabled(false);
+            jButtonExcluir.setToolTipText("Selecione um item da tabela antes de excluir");
             limparCampos();
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Selecione um item da tabela antes de excluir");
         } catch (Throwable ex) {
             Logger.getLogger(PdvView.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -386,12 +419,47 @@ public class PdvView extends javax.swing.JFrame {
         dao = new ProdutoDAO();
         Integer row = jTableTabela.getSelectedRow();
         Integer id = (Integer) jTableTabela.getModel().getValueAt(row, 0);
+        if (row == null) {
+            jButtonExcluir.setEnabled(false);
+            jButtonExcluir.setToolTipText("Selecione um item da tabela antes de excluir");
+        } else {
+            jButtonExcluir.setEnabled(true);
+            jButtonExcluir.setToolTipText("");
+        }
         try {
             aSerExcluido = (Produto) dao.getById(id);
         } catch (Throwable ex) {
             Logger.getLogger(PdvView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jTableTabelaMouseReleased
+
+    private void jButtonFecharActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFecharActionPerformed
+        JOptionPane.showMessageDialog(null, "Desenvolvido por: \n"
+                + "Luís Henrique de C. Corrêa - 2017102465");
+        this.dispose();
+    }//GEN-LAST:event_jButtonFecharActionPerformed
+
+    private void jComboBoxClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxClienteActionPerformed
+        Integer index = jComboBoxCliente.getSelectedIndex();
+
+        if (index > 0) {
+            jComboBoxLocal.setEnabled(true);
+        } else {
+            jComboBoxLocal.setSelectedIndex(0);
+            jComboBoxLocal.setEnabled(false);
+        }
+    }//GEN-LAST:event_jComboBoxClienteActionPerformed
+
+    private void jComboBoxLocalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxLocalActionPerformed
+        Integer index = jComboBoxLocal.getSelectedIndex();
+
+        if (index > 0) {
+            jComboBoxProduto.setEnabled(true);
+        } else {
+            jComboBoxProduto.setSelectedIndex(0);
+            jComboBoxProduto.setEnabled(false);
+        }
+    }//GEN-LAST:event_jComboBoxLocalActionPerformed
 
     private void limparCampos() {
         produtoSelecionado = null;
@@ -436,29 +504,6 @@ public class PdvView extends javax.swing.JFrame {
     }
 
     public static void main(String args[]) {
-
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(PdvView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(PdvView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(PdvView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(PdvView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new PdvView().setVisible(true);
@@ -468,8 +513,8 @@ public class PdvView extends javax.swing.JFrame {
 
 //<editor-fold defaultstate="collapsed" desc=" Declaracao de variaveis - nao mexer ">
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButtonExcluir;
+    private javax.swing.JButton jButtonFechar;
     private javax.swing.JButton jButtonVender;
     private javax.swing.JComboBox<String> jComboBoxCliente;
     private javax.swing.JComboBox<String> jComboBoxLocal;
