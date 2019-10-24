@@ -65,13 +65,4 @@ public class ClienteDAO implements DAO<Cliente> {
         return clientes;
     }
 
-    public static void main(String args[]) throws Throwable {
-        DAO dao = new ClienteDAO();
-
-        /* List<Cliente> clientes = dao.getAll();        
-        clientes.forEach(cli -> System.out.println(cli));*/
- /*Cliente cli = (Cliente) dao.getById(7);
-        System.out.println(cli);*/
-    }
-
 }

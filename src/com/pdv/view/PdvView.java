@@ -1,14 +1,8 @@
 package com.pdv.view;
 
-import com.pdv.db.dao.ClienteDAO;
-import com.pdv.db.dao.DAO;
-import com.pdv.db.dao.LocalDAO;
-import com.pdv.db.dao.ProdutoDAO;
-import com.pdv.db.dao.VendaDAO;
-import com.pdv.model.Cliente;
-import com.pdv.model.Detalhamento;
-import com.pdv.model.Localidade;
-import com.pdv.model.Produto;
+import com.pdv.db.dao.*;
+import com.pdv.exception.OutOFStockException;
+import com.pdv.model.*;
 import com.pdv.utils.Formatador;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,6 +31,9 @@ public class PdvView extends javax.swing.JFrame {
         atualizarCliente();
         atualizarLocal();
         atualizarprodutos();
+        jComboBoxCliente.setSelectedIndex(1);
+        jComboBoxLocal.setSelectedIndex(1);
+        jComboBoxProduto.setSelectedIndex(15);
     }
 
     private void atualizarCliente() {
@@ -338,7 +335,7 @@ public class PdvView extends javax.swing.JFrame {
         try {
             Long quantidade = Long.parseLong(jTextFieldQuantidade.getText());
             if (quantidade <= 0) {
-                JOptionPane.showMessageDialog(null, "Quantidade insira uma quantidade igual ou mairo que 1 (um)");
+                JOptionPane.showMessageDialog(null, "Quantidade insira uma quantidade igual ou maior que 1 (um)");
             } else {
                 dao = new ClienteDAO();
                 clienteSelecionado = (Cliente) dao.getById(getCod(jComboBoxCliente.getSelectedItem().toString()));
@@ -347,7 +344,7 @@ public class PdvView extends javax.swing.JFrame {
                 localSelecionado = (Localidade) dao.getById(getCod(jComboBoxLocal.getSelectedItem().toString()));
 
                 VendaDAO vendaDAO = new VendaDAO();
-                
+
                 detalhamento = vendaDAO.incluirVenda(clienteSelecionado.getCodCli(), localSelecionado.getCodLocal(),
                         produtoSelecionado.getCodProd(), quantidade);
                 atualizarLista(false);
@@ -359,7 +356,8 @@ public class PdvView extends javax.swing.JFrame {
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(null, "Preencha com números inteiros POSITIVOS o campo:\n QUANTIDADE");
         } catch (Throwable ex) {
-            Logger.getLogger(PdvView.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
+            JOptionPane.showMessageDialog(null, ex.getMessage() + "\n" + ex.getCause().getMessage());
         }
     }//GEN-LAST:event_jButtonVenderActionPerformed
 
@@ -467,6 +465,7 @@ public class PdvView extends javax.swing.JFrame {
             }
         });
     }
+
 //<editor-fold defaultstate="collapsed" desc=" Declaracao de variaveis - nao mexer ">
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton3;
@@ -490,4 +489,5 @@ public class PdvView extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldTotalCompra;
     // End of variables declaration//GEN-END:variables
 //</editor-fold>
+
 }

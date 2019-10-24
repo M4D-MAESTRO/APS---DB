@@ -99,14 +99,5 @@ public class ProdutoDAO implements DAO<Produto> {
 
         return localidade;
     }
-
-    public static void main(String args[]) throws Throwable {
-        DAO dao = new ProdutoDAO();
-
-        /* List<Produto> produtos = dao.getAll();
-        produtos.forEach(prod -> System.out.println(prod));*/
- /* Produto prod = (Produto) dao.getById(16);
-        System.out.println(prod);*/
-    }
-
+    
 }

@@ -63,13 +63,4 @@ public class LocalDAO implements DAO<Localidade> {
         return locais;
     }
 
-    public static void main(String args[]) throws Throwable {
-        DAO dao = new LocalDAO();
-
-        /* List<Localidade> locais = dao.getAll();        
-        locais.forEach(local -> System.out.println(local));*/
- /*Localidade local = (Localidade) dao.getById(5);
-       System.out.println(local);*/
-    }
-
 }
