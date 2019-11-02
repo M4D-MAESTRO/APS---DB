@@ -1,6 +1,7 @@
 package com.pdv.db;
 
 import java.sql.*;
+import javax.swing.JOptionPane;
 /**
  *
  * @author Luís Henrique de C. Corrêa
@@ -24,6 +25,7 @@ public class Factory {
         } catch (ClassNotFoundException ex) {
             throw new ClassNotFoundException("Não foi possível carregar o driver do banco");
         } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro: " + ex.getMessage() + "\nCausa: " + ex.getCause().getMessage(), "ERRO NO BANCO DE DADOS", JOptionPane.ERROR_MESSAGE);
             throw new SQLException("Falha ao conectar: " + ex.getMessage());
         }
 

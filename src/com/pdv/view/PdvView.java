@@ -81,14 +81,14 @@ public class PdvView extends javax.swing.JFrame {
         jComboBoxProduto.setModel(new DefaultComboBoxModel<>(codigos));
     }
 
-    private void setTable(){
+    private void setTable() {
         jTableTabela.getColumnModel().getColumn(0).setMaxWidth(50);
         jTableTabela.getColumnModel().getColumn(1).setMinWidth(200);
         jTableTabela.getColumnModel().getColumn(2).setMaxWidth(80);
         jTableTabela.getColumnModel().getColumn(3).setMaxWidth(100);
         jTableTabela.getColumnModel().getColumn(4).setMaxWidth(100);
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -456,6 +456,7 @@ public class PdvView extends javax.swing.JFrame {
         } else {
             jComboBoxLocal.setSelectedIndex(0);
             jComboBoxLocal.setEnabled(false);
+            limparLista();
         }
     }//GEN-LAST:event_jComboBoxClienteActionPerformed
 
@@ -477,6 +478,7 @@ public class PdvView extends javax.swing.JFrame {
         jComboBoxProduto.setSelectedIndex(0);
         aSerExcluido = null;
         detalhamento = null;
+        
     }
 
     private Double atualizarLista(boolean isRemocao) {
@@ -496,6 +498,16 @@ public class PdvView extends javax.swing.JFrame {
             return 0.0;
         }
 
+    }
+
+    private void limparLista() {
+        DefaultTableModel model = (DefaultTableModel) jTableTabela.getModel();
+        Integer quantRow = model.getRowCount();
+        model.setRowCount(0);
+       /* for (int i = 1; i <= quantRow; i++) {
+            System.out.println("passada: " + i);
+            model.removeRow(i);
+        }*/
     }
 
     private void atualizarTotal(Double valor, Boolean isRemocao) {
